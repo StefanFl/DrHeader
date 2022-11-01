@@ -148,8 +148,9 @@ def compare(file, json_output, debug, rule_file, rule_uri, merge, cross_origin_i
 @click.option('--merge', help='Merge custom file rules, on top of default rules', is_flag=True)
 @click.option('--junit', help='Produces a junit report with the result of the scan', is_flag=True)
 @click.option('--cross-origin-isolated', help='Enable cross-origin isolation validations', is_flag=True)
+@click.option('--no-error', help='Exit 0 if there are findings', is_flag=True)
 @click.pass_context
-def single(ctx, target_url, json_output, debug, rule_file, rule_uri, merge, junit, cross_origin_isolated):
+def single(ctx, target_url, json_output, debug, rule_file, rule_uri, merge, junit, cross_origin_isolated, no_error):
     """
     Scan a single http(s) endpoint with drheader.
 
@@ -194,7 +195,7 @@ def single(ctx, target_url, json_output, debug, rule_file, rule_uri, merge, juni
         else:
             raise click.ClickException('Failed to analyze headers.')
 
-    if drheader_instance.reporter.report:
+    if drheader_instance.reporter.report and not no_error:
         exit_code = EXIT_CODE_FAILURE
 
     if json_output:
@@ -226,8 +227,9 @@ def single(ctx, target_url, json_output, debug, rule_file, rule_uri, merge, juni
 @click.option('--rules-uri', 'rule_uri', help='Use custom rule set, downloaded from URI')
 @click.option('--merge', help='Merge custom file rules, on top of default rules', is_flag=True)
 @click.option('--cross-origin-isolated', help='Enable cross-origin isolation validations', is_flag=True)
+@click.option('--no-error', help='Exit 0 if there are findings', is_flag=True)
 @click.pass_context
-def bulk(ctx, file, json_output, input_format, debug, rule_file, rule_uri, merge, cross_origin_isolated):
+def bulk(ctx, file, json_output, input_format, debug, rule_file, rule_uri, merge, cross_origin_isolated, no_error):
     """
     Scan multiple http(s) endpoints with drheader.
 
@@ -312,7 +314,7 @@ def bulk(ctx, file, json_output, input_format, debug, rule_file, rule_uri, merge
         logging.debug('Analysing: {}...'.format(v))
         drheader_instance.analyze(rules, bool(cross_origin_isolated))
         audit.append({'url': v['url'], 'report': drheader_instance.reporter.report})
-        if drheader_instance.reporter.report:
+        if drheader_instance.reporter.report and not no_error:
             exit_code = EXIT_CODE_FAILURE
 
     echo_bulk_report(audit, json_output)
