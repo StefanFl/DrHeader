@@ -19,7 +19,7 @@ jobs:
           so_upload: 'false'
 
       - name: Import observations
-        uses: MaibornWolff/secobserve_actions_templates/actions/importer@action_importer
+        uses: MaibornWolff/secobserve_actions_templates/dev/actions/importer@dev
         with:
           so_api_base_url: https://secobserve.example.com
           so_api_token: geheim
