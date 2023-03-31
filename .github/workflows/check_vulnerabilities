@@ -1,1 +1,33 @@
+name: Vulnerability checks
 
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run Bandit
+        uses: MaibornWolff/secobserve_actions_templates/actions/SAST/bandit@main
+        with:
+          target: 'drheader'
+          report_name: 'drheader.sarif'
+          so_upload: 'false'
+
+      - name: Import observations
+        uses: MaibornWolff/secobserve_actions_templates/actions/importer@action_importer
+        with:
+          so_api_base_url: https://secobserve.example.com
+          so_api_token: geheim
+          so_product_name: DrHeader
+          so_file_name: 'drheader.sarif'
+          so_parser_name: SARIF
+
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: secobserve
+          path: |
+            drheader.sarif
