@@ -1,6 +1,6 @@
 name: Vulnerability checks
 
-on: workflow_dispatch
+on: [push]
 
 permissions: read-all
 
